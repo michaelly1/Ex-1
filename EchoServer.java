@@ -5,14 +5,30 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 import java.io.*;
-import java.util.concurrent.ExecutionException;
 
 public final class EchoServer {
 
     public static void main(String[] args) throws Exception {
             try (ServerSocket serverSocket = new ServerSocket(22222)) {
-                while(true) {
-                    Socket socket = serverSocket.accept();
+                while (true) {
+                    Thread test = new Thread(new EServerMulti(serverSocket.accept()));
+                    test.start();
+                    Thread.sleep(1000);
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+    }
+   public static class EServerMulti implements Runnable {
+        protected Socket socket;
+
+        public EServerMulti(Socket s)
+        {
+            socket = s;
+        }
+
+        public void run(){
+            try {
                     String address = socket.getInetAddress().getHostAddress();
                     System.out.printf("Client connected: %s%n", address);
 
@@ -31,9 +47,10 @@ public final class EchoServer {
                     }
 
                     System.out.printf("Client disconnected: %s%n", address);
-                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
     }
 }
