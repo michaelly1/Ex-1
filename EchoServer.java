@@ -11,7 +11,7 @@ public final class EchoServer {
     public static void main(String[] args) throws Exception {
             try (ServerSocket serverSocket = new ServerSocket(22222)) {
                 while (true) {
-                    Thread test = new Thread(new EServerMulti(serverSocket.accept()));
+                    Thread test = new Thread(new EServerMulti(serverSocket.accept()).mt);
                     test.start();
                     Thread.sleep(1000);
                 }
@@ -19,7 +19,7 @@ public final class EchoServer {
                 e.printStackTrace();
             }
     }
-   public static class EServerMulti implements Runnable {
+   public static class EServerMulti  {
         protected Socket socket;
 
         public EServerMulti(Socket s)
@@ -27,7 +27,7 @@ public final class EchoServer {
             socket = s;
         }
 
-        public void run(){
+        Runnable mt = () -> {
             try {
                     String address = socket.getInetAddress().getHostAddress();
                     System.out.printf("Client connected: %s%n", address);
@@ -51,6 +51,6 @@ public final class EchoServer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        };
     }
 }
